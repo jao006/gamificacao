@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jornada do Explorador - Geografia</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #1565c0;
+            --dark: #212121;
+            --light: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            margin: 0;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        header {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-weight: bold;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .main-content, .sidebar {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .territory {
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .territory.locked {
+            background-color: #fcfcfc;
+            opacity: 0.6;
+        }
+
+        .territory.locked::after {
+            content: "🔒 Conteúdo Bloqueado";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e53935;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background-color: #0d47a1;
+        }
+
+        button:disabled {
+            background-color: #bdbdbd;
+            cursor: not-allowed;
+        }
+
+        .badge-slot {
+            display: inline-block;
+            text-align: center;
+            margin: 10px;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+            width: 100px;
+            opacity: 0.3;
+        }
+
+        .badge-slot.unlocked {
+            opacity: 1;
+            border-style: solid;
+            border-color: #ffb300;
+            background-color: #fffde7;
+        }
+
+        .badge-icon {
+            font-size: 30px;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .leaderboard-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .leaderboard-list li.highlight {
+            background-color: #e3f2fd;
+            font-weight: bold;
+        }
+
+        .quiz-area {
+            margin-top: 15px;
+            display: none;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Jornada do Explorador: Os Mistérios do Planeta</h1>
+        <p>Transformando alunos em desbravadores do espaço geográfico!</p>
+    </header>
+
+    <div class="status-bar">
+        <div>Papel: <span style="color: var(--secondary);">Explorador 🌍</span></div>
+        <div>Streak Atual: <span id="streak">🔥 1 Dia</span></div>
+        <div>Seus Pontos: <span id="points" style="color: var(--primary);">0 XP</span></div>
+    </div>
+
+    <div class="container">
+        <main class="main-content">
+            <h2>🗺️ Territórios a Conquistar</h2>
+            
+            <div class="territory" id="t1">
+                <h3>Território 1: A Atmosfera e o Clima</h3>
+                <p>Missão: Entenda como as massas de ar moldam as paisagens e as plantações do nosso planeta.</p>
+                <button id="btn-t1" onclick="abrirQuiz(1)">Iniciar Micro-teste</button>
+                
+                <div id="quiz-t1" class="quiz-area">
+                    <p><strong>Feedback Imediato:</strong> O que acontece com a temperatura quando a altitude aumenta?</p>
+                    <input type="radio" name="q1" id="q1-a"> <label for="q1-a">A temperatura aumenta.</label><br>
+                    <input type="radio" name="q1" id="q1-b"> <label for="q1-b">A temperatura diminui. (Correta)</label><br><br>
+                    <button onclick="verificarResposta(1)">Enviar Resposta</button>
+                </div>
+            </div>
+
+            <div class="territory locked" id="t2">
+                <h3>Território 2: Relevo e Placas Tectônicas</h3>
+                <p>Missão: Desça até o manto terrestre para desvendar a origem das montanhas e vulcões.</p>
+                <button id="btn-t2" onclick="abrirQuiz(2)" disabled>Iniciar Micro-teste</button>
+
+                <div id="quiz-t2" class="quiz-area">
+                    <p><strong>Feedback Imediato:</strong> Qual dessas cordilheiras se formou pelo choque de placas tectônicas?</p>
+                    <input type="radio" name="q2" id="q2-a"> <label for="q2-a">Cordilheira dos Andes. (Correta)</label><br>
+                    <input type="radio" name="q2" id="q2-b"> <label for="q2-b">Planalto Central.</label><br><br>
+                    <button onclick="verificarResposta(2)">Enviar Resposta</button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; background: #e8f5e9; padding: 15px; border-radius: 8px;">
+                <h3>🛡️ Missão do seu Clã: "Os Cartógrafos"</h3>
+                <p>Status: <strong>80% Concluída</strong>. Ajude seu clã a terminar a análise de mapa da semana para ganhar bônus de pontos!</p>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <h2>🏅 Suas Medalhas</h2>
+            <div style="text-align: center;">
+                <div class="badge-slot" id="badge-velocista">
+                    <div class="badge-icon">⚡</div>
+                    <small>Velocista</small>
+                </div>
+                <div class="badge-slot" id="badge-mestre">
+                    <div class="badge-icon">🧭</div>
+                    <small>Mestre da Pesquisa</small>
+                </div>
+            </div>
+
+            <hr>
+
+            <h2>📊 Ranking da Turma</h2>
+            <ul class="leaderboard-list">
+                <li><span>1º Mariana (Clã Titãs)</span> <span>250 XP</span></li>
+                <li><span>2º Pedro (Clã Vulcão)</span> <span>180 XP</span></li>
+                <li class="highlight"><span>3º Você (Clã Cartógrafos)</span> <span id="rank-points">0 XP</span></li>
+                <li><span>4º Gabriel (Clã Ventania)</span> <span>40 XP</span></li>
+            </ul>
+        </aside>
+    </div>
+
+    <script>
+        // Variáveis de controle do jogo
+        let totalPoints = 0;
+
+        // Ativar o Micro-teste (Feedback Imediato)
+        function abrirQuiz(id) {
+            document.getElementById(`quiz-t${id}`).style.display = 'block';
+        }
+
+        // Sistema de validação de resposta com gatilho de mecânicas do slide
+        function verificarResposta(id) {
+            if (id === 1) {
+                const correta = document.getElementById('q1-b').checked;
+                if (correta) {
+                    alert("Resposta correta! +50 XP liberados instantaneamente.");
+                    atualizarPontos(50);
+                    liberarMedalha('badge-velocista');
+                    liberarProximoNivel(2);
+                    document.getElementById('quiz-t1').style.display = 'none';
+                    document.getElementById('btn-t1').disabled = true;
+                    document.getElementById('btn-t1').innerText = "Concluído";
+                } else {
+                    alert("Resposta incorreta. Tente novamente para garantir a maestria!");
+                }
+            } else if (id === 2) {
+                const correta = document.getElementById('q2-a').checked;
+                if (correta) {
+                    alert("Resposta correta! +50 XP. Você dominou o relevo!");
+                    atualizarPontos(50);
+                    liberarMedalha('badge-mestre');
+                    document.getElementById('quiz-t2').style.display = 'none';
+                    document.getElementById('btn-t2').disabled = true;
+                    document.getElementById('btn-t2').innerText = "Concluído";
+                } else {
+                    alert("Tente de novo! O manto terrestre ainda está instável.");
+                }
+            }
+        }
+
+        // Atualização da Pontuação e Ranking (Mecânica de Pontos e Ranking)
+        function atualizarPontos(qtd) {
+            totalPoints += qtd;
+            document.getElementById('points').innerText = totalPoints + " XP";
+            document.getElementById('rank-points').innerText = totalPoints + " XP";
+        }
+
+        // Desbloqueio por Maestria (Conteúdo Bloqueado)
+        function liberarProximoNivel(id) {
+            const nivel = document.getElementById(`t${id}`);
+            nivel.classList.remove('locked');
+            document.getElementById(`btn-t${id}`).disabled = false;
+        }
+
+        // Ganhar Medalha (Mecânica de Badges)
+        function liberarMedalha(id) {
+            document.getElementById(id).classList.add('unlocked');
+        }
+
+        // Simulação de Notificação Inteligente (Nudges de Streak)
+        setTimeout(() => {
+            alert("🔔 Nudge do App: Você mantém seu streak de estudos ativo por hoje! Continue assim para não perder seu multiplicador.");
+        }, 1500);
+    </script>
+</body>
+</html>
