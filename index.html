@@ -3,285 +3,593 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jornada do Explorador - Geografia</title>
+    <title>GeoQuest - A Jornada do Explorador</title>
     <style>
         :root {
-            --primary: #2e7d32;
-            --secondary: #1565c0;
-            --dark: #212121;
-            --light: #f5f5f5;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --primary-neon: #10b981;
+            --secondary-neon: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --locked-color: #475569;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
-            color: var(--dark);
+            padding: 24px;
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            max-width: 1300px;
+            margin: 0 auto;
         }
 
         header {
+            background: linear-gradient(135deg, #1e3a8a, #0f172a);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid #2563eb;
             text-align: center;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Status Bar / Menu Superior */
         .status-bar {
-            display: flex;
-            justify-content: space-around;
-            background: white;
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            font-weight: bold;
-        }
-
-        .container {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .main-content, .sidebar {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .territory {
-            border: 2px solid #e0e0e0;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .territory.locked {
-            background-color: #fcfcfc;
-            opacity: 0.6;
-        }
-
-        .territory.locked::after {
-            content: "🔒 Conteúdo Bloqueado";
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #e53935;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-
-        button {
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-
-        button:hover {
-            background-color: #0d47a1;
-        }
-
-        button:disabled {
-            background-color: #bdbdbd;
-            cursor: not-allowed;
-        }
-
-        .badge-slot {
-            display: inline-block;
-            text-align: center;
-            margin: 10px;
-            padding: 10px;
-            border: 1px dashed #ccc;
-            border-radius: 8px;
-            width: 100px;
-            opacity: 0.3;
-        }
-
-        .badge-slot.unlocked {
-            opacity: 1;
-            border-style: solid;
-            border-color: #ffb300;
-            background-color: #fffde7;
-        }
-
-        .badge-icon {
-            font-size: 30px;
-        }
-
-        .leaderboard-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .leaderboard-list li {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+        .status-card {
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #334155;
             display: flex;
+            align-items: center;
             justify-content: space-between;
         }
 
-        .leaderboard-list li.highlight {
-            background-color: #e3f2fd;
+        .status-card span:first-child {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-card span:last-child {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* Layout Principal */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Territórios e Missões */
+        .section-title {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .territory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .territory-card {
+            background: var(--bg-card);
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .territory-card.active {
+            border-color: var(--secondary-neon);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+        }
+
+        .territory-card.completed {
+            border-color: var(--primary-neon);
+            background: linear-gradient(135deg, var(--bg-card), #064e3b);
+        }
+
+        .territory-card.locked {
+            opacity: 0.5;
+            background: #111827;
+            border-color: #1f2937;
+            cursor: not-allowed;
+        }
+
+        .lock-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #991b1b;
+            color: #fca5a5;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-done {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #065f46;
+            color: #34d399;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .territory-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.25rem;
+        }
+
+        .territory-card p {
+            color: var(--text-muted);
+            margin: 0 0 16px 0;
+            font-size: 0.95rem;
+        }
+
+        /* Área de Testes (Micro-testes) */
+        .quiz-box {
+            display: none;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 16px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-label {
+            background: #1e293b;
+            border: 1px solid #475569;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-label:hover {
+            background: #334155;
+            border-color: #64748b;
+        }
+
+        /* Botões Estilizados */
+        .btn {
+            background: var(--secondary-neon);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn:disabled {
+            background: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .btn-success { background: var(--primary-neon); }
+        .btn-success:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+
+        /* Painel Lateral (Badges e Leaderboard) */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sidebar-card {
+            background: var(--bg-card);
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        /* Grid de Conquistas */
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .badge-item {
+            background: #111827;
+            border: 1px dashed #475569;
+            border-radius: 10px;
+            padding: 16px 8px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .badge-item.unlocked {
+            background: linear-gradient(135deg, #1e1b4b, #311042);
+            border: 1px solid #c084fc;
+            box-shadow: 0 4px 10px rgba(192, 132, 252, 0.15);
+        }
+
+        .badge-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            filter: grayscale(100%);
+            opacity: 0.4;
+        }
+
+        .badge-item.unlocked .badge-icon {
+            filter: grayscale(0%);
+            opacity: 1;
+            animation: pop 0.4s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .badge-item div:last-child {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .badge-item.unlocked div:last-child {
+            color: #e9d5ff;
+        }
+
+        /* Leaderboard / Ranking */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #111827;
+            border-radius: 8px;
+            border: 1px solid #1f2937;
+        }
+
+        .ranking-item.player {
+            border-color: var(--primary-neon);
+            background: linear-gradient(90deg, #064e3b, #111827);
             font-weight: bold;
         }
 
-        .quiz-area {
-            margin-top: 15px;
-            display: none;
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 6px;
+        .rank-number {
+            font-weight: bold;
+            color: var(--secondary-neon);
+            margin-right: 8px;
+        }
+
+        /* Clãs e Social */
+        .clan-banner {
+            background: linear-gradient(135deg, #311042, #1e1b4b);
+            border: 1px solid var(--accent-purple);
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        /* Barra de Progresso do Clã */
+        .progress-bar-container {
+            background: #111827;
+            border-radius: 10px;
+            height: 12px;
+            width: 100%;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--accent-purple), var(--secondary-neon));
+            height: 100%;
+            width: 75%;
+            transition: width 0.5s ease;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Jornada do Explorador: Os Mistérios do Planeta</h1>
-        <p>Transformando alunos em desbravadores do espaço geográfico!</p>
-    </header>
+    <div class="dashboard">
+        
+        <header>
+            <h1>🌍 GEOQUEST: A JORNADA DO EXPLORADOR</h1>
+            <p>Conquiste territórios, decifre climas e domine os mapas do planeta!</p>
+        </header>
 
-    <div class="status-bar">
-        <div>Papel: <span style="color: var(--secondary);">Explorador 🌍</span></div>
-        <div>Streak Atual: <span id="streak">🔥 1 Dia</span></div>
-        <div>Seus Pontos: <span id="points" style="color: var(--primary);">0 XP</span></div>
-    </div>
+        <div class="status-bar">
+            <div class="status-card">
+                <span>Classe Atual</span>
+                <span style="color: #60a5fa;">Explorador Sênior</span>
+            </div>
+            <div class="status-card">
+                <span>Streak Diária</span>
+                <span style="color: #f59e0b;" id="streak-txt">🔥 1 Dia</span>
+            </div>
+            <div class="status-card">
+                <span>Pontuação Total</span>
+                <span style="color: var(--primary-neon);" id="total-xp">0 XP</span>
+            </div>
+        </div>
 
-    <div class="container">
-        <main class="main-content">
-            <h2>🗺️ Territórios a Conquistar</h2>
+        <div class="grid-container">
             
-            <div class="territory" id="t1">
-                <h3>Território 1: A Atmosfera e o Clima</h3>
-                <p>Missão: Entenda como as massas de ar moldam as paisagens e as plantações do nosso planeta.</p>
-                <button id="btn-t1" onclick="abrirQuiz(1)">Iniciar Micro-teste</button>
+            <main class="territory-list">
+                <h2 class="section-title">🗺️ Mapa de Territórios do Planeta</h2>
+
+                <div class="territory-card active" id="card-t1">
+                    <h3>Território 1: A Atmosfera e a Dinâmica do Clima</h3>
+                    <p>Encare as massas de ar e descubra como a altitude e a pressão mudam os ecossistemas terrestres.</p>
+                    <button class="btn" id="btn-action-t1" onclick="jogarFase(1)">Desafiar Território</button>
+                    
+                    <div class="quiz-box" id="quiz-box-t1">
+                        <p><strong>Micro-teste:</strong> O que acontece com a pressão atmosférica e a temperatura à medida que subimos uma montanha muito alta?</p>
+                        <div class="options-group">
+                            <label class="option-label"><input type="radio" name="geo1" value="errado"> Ambas aumentam drasticamente.</label>
+                            <label class="option-label"><input type="radio" name="geo1" id="correct-1" value="certo"> A pressão e a temperatura diminuem.</label>
+                            <label class="option-label"><input type="radio" name="geo1" value="errado"> A pressão aumenta e a temperatura diminui.</label>
+                        </div>
+                        <button class="btn btn-success" onclick="validarFase(1)">Enviar Solução</button>
+                    </div>
+                </div>
+
+                <div class="territory-card locked" id="card-t2">
+                    <span class="lock-badge" id="lock-t2">🔒 Requer Nível 2</span>
+                    <h3>Território 2: Tectonismo e a Escultura do Relevo</h3>
+                    <p>Desça ao núcleo terrestre e entenda as forças tectônicas que rasgam continentes e criam montanhas gigantescas.</p>
+                    <button class="btn" id="btn-action-t2" onclick="jogarFase(2)" disabled>Desafiar Território</button>
+
+                    <div class="quiz-box" id="quiz-box-t2">
+                        <p><strong>Micro-teste:</strong> A Cordilheira dos Andes e do Himalaia originaram-se de qual tipo de movimento de placas tectônicas?</p>
+                        <div class="options-group">
+                            <label class="option-label"><input type="radio" name="geo2" id="correct-2" value="certo"> Movimento Convergente (Choque de Placas).</label>
+                            <label class="option-label"><input type="radio" name="geo2" value="errado"> Movimento Divergente (Afastamento de Placas).</label>
+                            <label class="option-label"><input type="radio" name="geo2" value="errado"> Movimento Transformante (Deslizamento Lateral).</label>
+                        </div>
+                        <button class="btn btn-success" onclick="validarFase(2)">Enviar Solução</button>
+                    </div>
+                </div>
+
+                <div class="territory-card locked" id="card-t3">
+                    <span class="lock-badge" id="lock-t3">🔒 Requer Nível 3</span>
+                    <h3>Território 3: Cartografia e a Leitura do Espaço</h3>
+                    <p>Aprenda as coordenadas mundiais, fusos horários e as distorções das projeções de mapas.</p>
+                    <button class="btn" id="btn-action-t3" onclick="jogarFase(3)" disabled>Desafiar Território</button>
+
+                    <div class="quiz-box" id="quiz-box-t3">
+                        <p><strong>Micro-teste:</strong> Se um mapa possui a escala de 1:100.000, isso significa que cada 1cm medido no papel equivale a qual distância real?</p>
+                        <div class="options-group">
+                            <label class="option-label"><input type="radio" name="geo3" value="errado"> 100 metros reais.</label>
+                            <label class="option-label"><input type="radio" name="geo3" value="errado"> 10 Quilômetros reais.</label>
+                            <label class="option-label"><input type="radio" name="geo3" id="correct-3" value="certo"> 1 Quilômetro real.</label>
+                        </div>
+                        <button class="btn btn-success" onclick="validarFase(3)">Enviar Solução</button>
+                    </div>
+                </div>
+
+                <div class="territory-card locked" id="card-t4">
+                    <span class="lock-badge" id="lock-t4">🔒 Requer Nível 4</span>
+                    <h3>Território 4: Geopolítica e Globalização Econômica</h3>
+                    <p>O desafio definitivo: Compreenda os blocos econômicos, fluxos migratórios e as cadeias globais de poder.</p>
+                    <button class="btn" id="btn-action-t4" onclick="jogarFase(4)" disabled>Desafiar Território</button>
+
+                    <div class="quiz-box" id="quiz-box-t4">
+                        <p><strong>Micro-teste Final:</strong> O fenômeno da Globalização promove a integração mundial. Qual elemento é o principal motor dessa velocidade de conexão?</p>
+                        <div class="options-group">
+                            <label class="option-label"><input type="radio" name="geo4" id="correct-4" value="certo"> A evolução dos transportes e das telecomunicações.</label>
+                            <label class="option-label"><input type="radio" name="geo4" value="errado"> O isolamento das fronteiras nacionais alfandegárias.</label>
+                            <label class="option-label"><input type="radio" name="geo4" value="errado"> A diminuição do uso de moedas digitais e internet.</label>
+                        </div>
+                        <button class="btn btn-success" onclick="validarFase(4)">Enviar Solução</button>
+                    </div>
+                </div>
+
+                <div class="clan-banner">
+                    <h3 style="margin: 0 0 5px 0; color: #c084fc;">🛡️ Objetivo do seu Clã: "Os Cartógrafos"</h3>
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Missão de Grupo: Completem 400 XP conjuntos nesta semana para desbloquear o baú bônus.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="clan-bar"></div>
+                    </div>
+                    <div style="text-align: right; font-size: 0.8rem; margin-top: 5px; color: #a78bfa;" id="clan-text">Seu clã está com 300 / 400 XP</div>
+                </div>
+            </main>
+
+            <aside class="sidebar">
                 
-                <div id="quiz-t1" class="quiz-area">
-                    <p><strong>Feedback Imediato:</strong> O que acontece com a temperatura quando a altitude aumenta?</p>
-                    <input type="radio" name="q1" id="q1-a"> <label for="q1-a">A temperatura aumenta.</label><br>
-                    <input type="radio" name="q1" id="q1-b"> <label for="q1-b">A temperatura diminui. (Correta)</label><br><br>
-                    <button onclick="verificarResposta(1)">Enviar Resposta</button>
+                <div class="sidebar-card">
+                    <h3 style="margin-top:0; border-bottom: 1px solid #334155; padding-bottom:10px;">🏅 Suas Medalhas</h3>
+                    <div class="badges-grid">
+                        <div class="badge-item" id="badge-1">
+                            <div class="badge-icon">⚡</div>
+                            <div>Velocista</div>
+                        </div>
+                        <div class="badge-item" id="badge-2">
+                            <div class="badge-icon">⛰️</div>
+                            <div>Alpinista</div>
+                        </div>
+                        <div class="badge-item" id="badge-3">
+                            <div class="badge-icon">🧭</div>
+                            <div>Mestre Bússola</div>
+                        </div>
+                        <div class="badge-item" id="badge-4">
+                            <div class="badge-icon">👑</div>
+                            <div>Soberano Global</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="territory locked" id="t2">
-                <h3>Território 2: Relevo e Placas Tectônicas</h3>
-                <p>Missão: Desça até o manto terrestre para desvendar a origem das montanhas e vulcões.</p>
-                <button id="btn-t2" onclick="abrirQuiz(2)" disabled>Iniciar Micro-teste</button>
-
-                <div id="quiz-t2" class="quiz-area">
-                    <p><strong>Feedback Imediato:</strong> Qual dessas cordilheiras se formou pelo choque de placas tectônicas?</p>
-                    <input type="radio" name="q2" id="q2-a"> <label for="q2-a">Cordilheira dos Andes. (Correta)</label><br>
-                    <input type="radio" name="q2" id="q2-b"> <label for="q2-b">Planalto Central.</label><br><br>
-                    <button onclick="verificarResposta(2)">Enviar Resposta</button>
+                <div class="sidebar-card">
+                    <h3 style="margin-top:0; border-bottom: 1px solid #334155; padding-bottom:10px;">📊 Ranking da Sala</h3>
+                    <div class="ranking-list">
+                        <div class="ranking-item">
+                            <div><span class="rank-number">1º</span> Mariana (Clã Titãs)</div>
+                            <div style="color: var(--primary-neon);">280 XP</div>
+                        </div>
+                        <div class="ranking-item">
+                            <div><span class="rank-number">2º</span> Pedro (Clã Vulcões)</div>
+                            <div style="color: var(--primary-neon);">190 XP</div>
+                        </div>
+                        <div class="ranking-item player">
+                            <div><span class="rank-number" style="color: #fff;">3º</span> Você (Seu Clã)</div>
+                            <div style="color: #fff;" id="rank-xp">0 XP</div>
+                        </div>
+                        <div class="ranking-item">
+                            <div><span class="rank-number" style="color: #94a3b8;">4º</span> Júlia (Clã Ventania)</div>
+                            <div style="color: var(--primary-neon);">50 XP</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div style="margin-top: 30px; background: #e8f5e9; padding: 15px; border-radius: 8px;">
-                <h3>🛡️ Missão do seu Clã: "Os Cartógrafos"</h3>
-                <p>Status: <strong>80% Concluída</strong>. Ajude seu clã a terminar a análise de mapa da semana para ganhar bônus de pontos!</p>
-            </div>
-        </main>
 
-        <aside class="sidebar">
-            <h2>🏅 Suas Medalhas</h2>
-            <div style="text-align: center;">
-                <div class="badge-slot" id="badge-velocista">
-                    <div class="badge-icon">⚡</div>
-                    <small>Velocista</small>
-                </div>
-                <div class="badge-slot" id="badge-mestre">
-                    <div class="badge-icon">🧭</div>
-                    <small>Mestre da Pesquisa</small>
-                </div>
-            </div>
-
-            <hr>
-
-            <h2>📊 Ranking da Turma</h2>
-            <ul class="leaderboard-list">
-                <li><span>1º Mariana (Clã Titãs)</span> <span>250 XP</span></li>
-                <li><span>2º Pedro (Clã Vulcão)</span> <span>180 XP</span></li>
-                <li class="highlight"><span>3º Você (Clã Cartógrafos)</span> <span id="rank-points">0 XP</span></li>
-                <li><span>4º Gabriel (Clã Ventania)</span> <span>40 XP</span></li>
-            </ul>
-        </aside>
+            </aside>
+        </div>
     </div>
 
     <script>
-        // Variáveis de controle do jogo
-        let totalPoints = 0;
+        let xpTotal = 0;
 
-        // Ativar o Micro-teste (Feedback Imediato)
-        function abrirQuiz(id) {
-            document.getElementById(`quiz-t${id}`).style.display = 'block';
+        function jogarFase(faseNum) {
+            // Fecha todas as caixas abertas primeiro
+            for(let i=1; i<=4; i++) {
+                document.getElementById(`quiz-box-t${i}`).style.display = 'none';
+            }
+            // Abre a caixa da fase atual
+            document.getElementById(`quiz-box-t${faseNum}`).style.display = 'block';
         }
 
-        // Sistema de validação de resposta com gatilho de mecânicas do slide
-        function verificarResposta(id) {
-            if (id === 1) {
-                const correta = document.getElementById('q1-b').checked;
-                if (correta) {
-                    alert("Resposta correta! +50 XP liberados instantaneamente.");
-                    atualizarPontos(50);
-                    liberarMedalha('badge-velocista');
-                    liberarProximoNivel(2);
-                    document.getElementById('quiz-t1').style.display = 'none';
-                    document.getElementById('btn-t1').disabled = true;
-                    document.getElementById('btn-t1').innerText = "Concluído";
-                } else {
-                    alert("Resposta incorreta. Tente novamente para garantir a maestria!");
+        function validarFase(faseNum) {
+            const isCorrect = document.getElementById(`correct-${faseNum}`).checked;
+
+            if (isCorrect) {
+                alert(`🎉 Fantástico! Você conquistou o Território ${faseNum}. +50 XP liberados na hora!`);
+                
+                // Atualiza XP
+                xpTotal += 50;
+                document.getElementById('total-xp').innerText = xpTotal + " XP";
+                document.getElementById('rank-xp').innerText = xpTotal + " XP";
+
+                // Atualiza visual do card atual
+                const cardAtual = document.getElementById(`card-t${faseNum}`);
+                cardAtual.classList.remove('active');
+                cardAtual.classList.add('completed');
+                
+                // Remove botão e adiciona selo de Concluído
+                document.getElementById(`quiz-box-t${faseNum}`).style.display = 'none';
+                document.getElementById(`btn-action-t1`).disabled = true;
+                
+                const btnAction = document.getElementById(`btn-action-t${faseNum}`);
+                btnAction.style.display = 'none';
+                
+                const badgePronto = document.createElement('span');
+                badgePronto.className = "badge-done";
+                badgePronto.innerText = "⭐ Concluído (Maestria)";
+                cardAtual.appendChild(badgePronto);
+
+                // Libera a medalha correspondente
+                document.getElementById(`badge-${faseNum}`).classList.add('unlocked');
+
+                // Atualiza o progresso do Clã fictício na tela
+                let progressoClan = 300 + xpTotal;
+                if (progressoClan > 400) progressoClan = 400;
+                document.getElementById('clan-bar').style.width = (progressoClan / 4) + "%";
+                document.getElementById('clan-text').innerText = `Seu clã está com ${progressoClan} / 400 XP`;
+
+                // Desbloqueia a próxima fase por Maestria
+                const proximaFase = faseNum + 1;
+                if (proximaFase <= 4) {
+                    const proximoCard = document.getElementById(`card-t${proximaFase}`);
+                    proximoCard.classList.remove('locked');
+                    proximoCard.classList.add('active');
+                    
+                    document.getElementById(`lock-t${proximaFase}`).style.display = 'none';
+                    document.getElementById(`btn-action-t${proximaFase}`).disabled = false;
                 }
-            } else if (id === 2) {
-                const correta = document.getElementById('q2-a').checked;
-                if (correta) {
-                    alert("Resposta correta! +50 XP. Você dominou o relevo!");
-                    atualizarPontos(50);
-                    liberarMedalha('badge-mestre');
-                    document.getElementById('quiz-t2').style.display = 'none';
-                    document.getElementById('btn-t2').disabled = true;
-                    document.getElementById('btn-t2').innerText = "Concluído";
-                } else {
-                    alert("Tente de novo! O manto terrestre ainda está instável.");
-                }
+            } else {
+                alert("❌ Resposta incorreta! O terreno está instável. Reveja o conteúdo e tente novamente para liberar o próximo nível!");
             }
         }
 
-        // Atualização da Pontuação e Ranking (Mecânica de Pontos e Ranking)
-        function atualizarPontos(qtd) {
-            totalPoints += qtd;
-            document.getElementById('points').innerText = totalPoints + " XP";
-            document.getElementById('rank-points').innerText = totalPoints + " XP";
-        }
-
-        // Desbloqueio por Maestria (Conteúdo Bloqueado)
-        function liberarProximoNivel(id) {
-            const nivel = document.getElementById(`t${id}`);
-            nivel.classList.remove('locked');
-            document.getElementById(`btn-t${id}`).disabled = false;
-        }
-
-        // Ganhar Medalha (Mecânica de Badges)
-        function liberarMedalha(id) {
-            document.getElementById(id).classList.add('unlocked');
-        }
-
-        // Simulação de Notificação Inteligente (Nudges de Streak)
+        // Sistema de Notificações Inteligentes (Simula o Nudge do slide após carregar a página)
         setTimeout(() => {
-            alert("🔔 Nudge do App: Você mantém seu streak de estudos ativo por hoje! Continue assim para não perder seu multiplicador.");
-        }, 1500);
+            alert("🔔 Nudge do App: Você possui missões diárias ativas! Conclua um território hoje para manter seu bônus de sequência aceso.");
+        }, 1200);
     </script>
 </body>
 </html>
